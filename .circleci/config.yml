@@ -159,11 +159,11 @@ jobs:
           command: |
             aws ec2 describe-instances \
               --query Reservations[*].Instances[*].PublicIpAddress \
-              --output text >> instances_addresses.txt
-            if [[ -z "$(cat instance_addresses.txt)" ]]; then exit 1; fi
+              --output text >> instances.txt
+            if [[ -z "$(cat instances.txt)" ]]; then exit 1; fi
 
-            cat instances_addresses.txt >> ~/project/.circleci/ansible/inventory.txt
-            rm instances_addresses.txt
+            cat instances.txt >> ~/project/.circleci/ansible/inventory.txt
+            rm instances.txt
           
       - persist_to_workspace:
           root: ~/
