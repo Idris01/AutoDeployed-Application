@@ -191,6 +191,7 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt install tar gzip -y
+            ls
             sudo pip install ansible
             sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
             sudo unzip awscliv2.zip
