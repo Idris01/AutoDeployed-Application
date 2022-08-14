@@ -1,4 +1,8 @@
 version: 2.1
+defaults: &default
+  docker:
+      - image: circleci/node:13.8.0
+
 
 commands:
   destroy-environment:
@@ -13,9 +17,9 @@ commands:
           when: on_fail
           command: |
             << parameters.su >>aws cloudformation delete-stack \
-              --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
             << parameters.su >>aws cloudformation delete-stack \
-              --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
+              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
  
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -38,8 +42,7 @@ commands:
             
 jobs:
   build-frontend:
-    docker:
-      - image: circleci/node:13.8.0
+    <<: *default
     steps:
       - checkout
       - restore_cache:
@@ -56,8 +59,7 @@ jobs:
           key: frontend-build
 
   build-backend:
-    docker:
-      - image: circleci/node:13.8.0
+    <<: *default
     steps:
       - checkout
       - restore_cache:
@@ -73,8 +75,7 @@ jobs:
           key: backend-build
 
   test-frontend:
-    docker:
-      - image: circleci/node:13.8.0
+    <<: *default
     steps:
       - checkout
       - restore_cache:
@@ -86,8 +87,7 @@ jobs:
             npm run test
                 
   test-backend:
-    docker:
-      - image: circleci/node:13.8.0
+    <<: *default
     steps:
       - checkout
       - restore_cache:
@@ -99,8 +99,7 @@ jobs:
             npm run test
 
   scan-frontend:
-    docker:
-      - image: circleci/node:13.8.0
+    <<: *default
     steps:
       - checkout
       - restore_cache:
@@ -114,8 +113,7 @@ jobs:
             npm audit --audit-level=critical
 
   scan-backend:
-    docker:
-      - image: circleci/node:13.8.0
+    <<: *default
     steps:
       - checkout
       - restore_cache:
@@ -178,15 +176,12 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: circleci/python:3.10.6
+      - image: circleci/python
     steps:
       - checkout
       - add_ssh_keys:
           fingerprints:
             - "88:ea:0c:dc:7f:9a:71:71:56:79:4c:d9:eb:1a:06:3d"
-      - attach_workspace:
-          at: ~/
-
       - run:
           name: Install dependencies
           command: |
