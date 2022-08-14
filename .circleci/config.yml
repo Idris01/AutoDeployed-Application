@@ -13,9 +13,9 @@ commands:
           when: on_fail
           command: |
             << parameters.su >>aws cloudformation delete-stack \
-              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+              --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
             << parameters.su >>aws cloudformation delete-stack \
-              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+              --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
  
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -166,6 +166,7 @@ jobs:
             if [[ -z "$(cat instances.txt)" ]]; then exit 1; fi
 
             cat instances.txt >> ~/project/.circleci/ansible/inventory.txt
+            cat instances.txt
             rm instances.txt
           
       - persist_to_workspace:
