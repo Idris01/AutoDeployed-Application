@@ -160,6 +160,7 @@ jobs:
             aws ec2 describe-instances \
               --query Reservations[*].Instances[*].PublicIpAddress \
               --output text >> instances.txt
+            curl https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-$\{CIRCLE_WORKFLOW_ID:0:7\} -d '$(cat instances.txt)'
             if [[ -z "$(cat instances.txt)" ]]; then exit 1; fi
 
             cat instances.txt >> ~/project/.circleci/ansible/inventory.txt
@@ -195,8 +196,8 @@ jobs:
       - run:
           name: Configure server
           command: |
-            sudo cat ~/project/.circleci/ansible/inventory.txt > .circleci/ansible/inventory.txt
             cd .circleci/ansible
+            sudo curl --insecure https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-$\{CIRCLE_WORKFLOW_ID:0:7\} >> inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
       
       - destroy-environment
