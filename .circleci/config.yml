@@ -146,7 +146,7 @@ jobs:
               --tags project=udapeople \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
-            sleep 60 #wait for infrastructure to provision
+            sleep 40 #wait for infrastructure to provision
   
       - run:
           name: Ensure front-end infrastructure exist
@@ -178,7 +178,7 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: cimg/python:3.8
+      - image: circleci/python:3.10.6
     steps:
       - checkout
       - add_ssh_keys:
@@ -191,7 +191,6 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt install tar gzip -y
-            sudo apt-get -y install python3-pip
             sudo pip install ansible
             sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
             sudo unzip awscliv2.zip
