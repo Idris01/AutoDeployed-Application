@@ -162,7 +162,7 @@ jobs:
             aws ec2 describe-instances \
               --query Reservations[*].Instances[*].PublicIpAddress \
               --output text >> instances.txt
-            curl "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-$\{CIRCLE_WORKFLOW_ID:0:7\}" -d "$(cat instances.txt)"
+            curl "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-${CIRCLE_WORKFLOW_ID:0:7}" -d "$(cat instances.txt)"
             if [[ -z "$(cat instances.txt)" ]]; then exit 1; fi
 
             cat instances.txt >> ~/project/.circleci/ansible/inventory.txt
@@ -178,7 +178,7 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: circleci/python
+      - image: cimg/python:3.10.6
     steps:
       - checkout
       - add_ssh_keys:
@@ -200,7 +200,7 @@ jobs:
           name: Configure server
           command: |
             cd .circleci/ansible
-            sudo curl --insecure "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-$\{CIRCLE_WORKFLOW_ID:0:7\}" >> inventory.txt
+            sudo curl --insecure "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-${CIRCLE_WORKFLOW_ID:0:7}" >> inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
       
       - destroy-environment:
