@@ -4,17 +4,19 @@ commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      # Add parameter here   
+      su:
+        type: string
+        default: ''
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
-            aws cloudformation delete-stack \
+            << parameters.su >>aws cloudformation delete-stack \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-            aws cloudformation delete-stack \
+            << parameters.su >>aws cloudformation delete-stack \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
-
+ 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
@@ -160,7 +162,7 @@ jobs:
             aws ec2 describe-instances \
               --query Reservations[*].Instances[*].PublicIpAddress \
               --output text >> instances.txt
-            curl https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-$\{CIRCLE_WORKFLOW_ID:0:7\} -d '$(cat instances.txt)'
+            curl "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-$\{CIRCLE_WORKFLOW_ID:0:7\}" -d "$(cat instances.txt)"
             if [[ -z "$(cat instances.txt)" ]]; then exit 1; fi
 
             cat instances.txt >> ~/project/.circleci/ansible/inventory.txt
@@ -197,10 +199,11 @@ jobs:
           name: Configure server
           command: |
             cd .circleci/ansible
-            sudo curl --insecure https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-$\{CIRCLE_WORKFLOW_ID:0:7\} >> inventory.txt
+            sudo curl --insecure "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-$\{CIRCLE_WORKFLOW_ID:0:7\}" >> inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
       
-      - destroy-environment
+      - destroy-environment:
+          su: "sudo "
 
 
 
