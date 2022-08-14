@@ -178,7 +178,7 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: cimg/python:3.10.6
+      - image: cimg/python:3.8
     steps:
       - checkout
       - add_ssh_keys:
@@ -191,7 +191,7 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt install tar gzip -y
-            sudo pip3 install ansible
+            sudo pip install ansible
             sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
             sudo unzip awscliv2.zip
             sudo ./aws/install
