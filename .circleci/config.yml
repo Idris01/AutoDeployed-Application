@@ -3,7 +3,7 @@ version: 2.1
 defaults: 
   - &default
       docker:
-        - image: cimg/node:18.4.0
+        - image: circleci/node:13.8
   - &default-python
       docker:
         - image: circleci/python
@@ -86,7 +86,7 @@ jobs:
           command: |
              cd backend
              npm install
-             npm run build
+             npm build
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
