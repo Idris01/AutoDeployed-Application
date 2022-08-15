@@ -3,7 +3,7 @@ version: 2.1
 defaults: 
   - &default
       docker:
-        - image: circleci/node:13.8.0
+        - image: circleci/node:16.10.0
   - &default-python
       docker:
         - image: circleci/python
@@ -26,7 +26,19 @@ commands:
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
             << parameters.su >>aws cloudformation delete-stack \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
- 
+  install-awscli:
+    description: install aws-cli
+    parameters:
+      su:
+        type: string
+        default: ''
+    steps:
+      - run:
+          command: |
+            << parameters.su >>curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+            << parameters.su >>unzip awscliv2.zip
+            << parameters.su >>./aws/install
+
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
@@ -136,12 +148,14 @@ jobs:
     <<: *default
     steps:
       - checkout
+      - install-awscli
       - restore_cache:
           keys: [backend-build]
       - run:
           name: Run migrations
           command: |
             cd backend
+            npm cache verify
             npm install
             npm audit fix --audit-level=critical --force
             npm audit fix --force
