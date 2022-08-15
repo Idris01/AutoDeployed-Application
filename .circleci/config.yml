@@ -151,8 +151,8 @@ jobs:
       - checkout
       - install-awscli:
           su: "sudo "
-      # - restore_cache:
-      #    keys: [backend-build]
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Run migrations
           command: |
@@ -161,8 +161,9 @@ jobs:
             npm install
             npm audit fix --audit-level=critical --force
             npm audit fix --force
-
+            npm audit --audit-level=critical
             npm run migrations > migrations_dump.txt
+
             if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
             then
               curl "${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}" -d "1"
