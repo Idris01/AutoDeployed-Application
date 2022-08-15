@@ -244,8 +244,6 @@ jobs:
       - destroy-environment:
           su: "sudo "
 
-
-
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli
