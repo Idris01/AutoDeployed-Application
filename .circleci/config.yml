@@ -146,7 +146,7 @@ jobs:
   
   run-migrations:
     docker:
-      - image: circleci/node:16.10.0
+      - image: cimg/node:18.4.0
     steps:
       - checkout
       - install-awscli:
