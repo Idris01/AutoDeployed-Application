@@ -152,7 +152,7 @@ jobs:
           keys: [backend-build]
       - install-awscli:
           su: "sudo "
-     - run:
+      - run:
           name: Run migrations
           command: |
             cd backend
