@@ -148,7 +148,8 @@ jobs:
     <<: *default
     steps:
       - checkout
-      - install-awscli
+      - install-awscli:
+          su: "sudo "
       - restore_cache:
           keys: [backend-build]
       - run:
