@@ -146,6 +146,7 @@ jobs:
       - run:
           name: Send migration results to memstash
           command: |
+            cd backend
             npm run migrations > migrations_dump.txt
             if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
             then
@@ -206,6 +207,14 @@ jobs:
             - "88:ea:0c:dc:7f:9a:71:71:56:79:4c:d9:eb:1a:06:3d"
       - run:
           name: Install dependencies
+          command: |
+            sudo apt install tar gzip -y
+            sudo pip install ansible
+            sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+            sudo unzip awscliv2.zip
+            sudo ./aws/install
+      - run:
+          name: Create Artifacts
           command: |
             cd backend
             npm i
