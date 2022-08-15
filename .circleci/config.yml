@@ -3,7 +3,7 @@ version: 2.1
 defaults: 
   - &default
       docker:
-        - image: circleci/node:13.8
+        - image: cimg/node:18.4.0
   - &default-python
       docker:
         - image: circleci/python
@@ -145,23 +145,18 @@ jobs:
             npm audit --audit-level=critical
   
   run-migrations:
-    docker:
-      - image: cimg/node:18.4.0
+    <<: *default
     steps:
       - checkout
-      - install-awscli:
-          su: "sudo "
       - restore_cache:
           keys: [backend-build]
-      - run:
+      - install-awscli:
+          su: "sudo "
+     - run:
           name: Run migrations
           command: |
             cd backend
-            npm cache verify
             npm install
-            npm audit fix --audit-level=critical --force
-            npm audit fix --force
-            npm audit --audit-level=critical
             npm run migrations > migrations_dump.txt
 
             if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
