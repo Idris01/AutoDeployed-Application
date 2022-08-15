@@ -35,9 +35,9 @@ commands:
     steps:
       - run:
           command: |
-            << parameters.su >>curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+            << parameters.su >>curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             << parameters.su >>unzip awscliv2.zip
-            << parameters.su >>./aws/install
+            << parameters.su >>sudo ./aws/install
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -150,8 +150,8 @@ jobs:
       - checkout
       - install-awscli:
           su: "sudo "
-      - restore_cache:
-          keys: [backend-build]
+      # - restore_cache:
+      #    keys: [backend-build]
       - run:
           name: Run migrations
           command: |
@@ -159,8 +159,6 @@ jobs:
             npm cache verify
             npm install
             npm audit fix --audit-level=critical --force
-            npm audit fix --force
-            npm audit --audit-level=critical
 
             npm run migrations > migrations_dump.txt
             if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
@@ -175,6 +173,8 @@ jobs:
     <<: *default-python
     steps:
       - checkout
+      - install-awscli:
+          su: "sudo "
       - restore_cache:
           keys: [frontend-build]
       - run:
@@ -182,13 +182,8 @@ jobs:
           command: |
             sudo apt install tar gzip -y
             sudo pip install ansible
-            sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
-            sudo unzip awscliv2.zip
-            sudo ./aws/install
-            
             sudo curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
             sudo apt-get install nodejs
-
             sudo npm install pm2
 
       - run:
@@ -202,13 +197,13 @@ jobs:
             cat frontend/.env
 
       - run:
-          name: Deploy frontend objects
+          name: Deploy frontend service
           command: |
             cd frontend
             npm install
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            aws s3 cp dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
       
       - revert-migrations
       - destroy-environment
@@ -217,6 +212,8 @@ jobs:
     <<: *default-python
     steps:
       - checkout
+      - install-awscli:
+          su: "sudo " 
       - add_ssh_keys:
           fingerprints:
             - "88:ea:0c:dc:7f:9a:71:71:56:79:4c:d9:eb:1a:06:3d"
@@ -225,9 +222,7 @@ jobs:
           command: |
             sudo apt install tar gzip -y
             sudo pip install ansible
-            sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
-            sudo unzip awscliv2.zip
-            sudo ./aws/install
+
       - run:
           name: Create Artifacts
           command: |
@@ -239,7 +234,7 @@ jobs:
             sudo mkdir -p .circleci/ansible/roles/deploy/files
             sudo mv artifact.tar.gz .circleci/ansible/roles/deploy/files
             cd .circleci/ansible
-            curl --insecure "${KVDB_BUCKET}/web-${CIRCLE_WORKFLOW_ID:0:7}" >> inventory.txt
+            sudo curl --insecure "${KVDB_BUCKET}/web-${CIRCLE_WORKFLOW_ID:0:7}" >> inventory.txt
             echo "Contents of inventory.txt file is $(cat inventory.txt)"
       - run:
           name: Deploy backend
@@ -303,6 +298,8 @@ jobs:
     <<: *default-python
     steps:
       - checkout
+      - install-awscli:
+          su: "sudo " 
       - add_ssh_keys:
           fingerprints:
             - "88:ea:0c:dc:7f:9a:71:71:56:79:4c:d9:eb:1a:06:3d"
@@ -311,10 +308,7 @@ jobs:
           command: |
             sudo apt install tar gzip -y
             sudo pip install ansible
-            sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
-            sudo unzip awscliv2.zip
-            sudo ./aws/install
-            
+                       
       - run:
           name: Configure server
           command: |
