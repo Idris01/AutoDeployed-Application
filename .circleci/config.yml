@@ -8,13 +8,14 @@ defaults:
       docker:
         - image: circleci/python
 
-
-
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
       su:
+        type: string
+        default: ''
+      path:
         type: string
         default: ''
     steps:
@@ -26,6 +27,18 @@ commands:
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
             << parameters.su >>aws cloudformation delete-stack \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+      - run:
+          name: print log
+          when: on_fail
+          command: |
+            param=<< parameters.path >>
+            if [[ -z $param ]]
+            then
+              exit 0
+            else
+              cat $param
+            fi
+
   install-awscli:
     description: install aws-cli
     parameters:
@@ -166,7 +179,8 @@ jobs:
             else
               curl "${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}" -d "0"
             fi
-      - destroy-environment
+      - destroy-environment:
+          path: "/home/circleci/.npm/_logs/*.log"
 
   deploy-frontend:
     <<: *default-python
