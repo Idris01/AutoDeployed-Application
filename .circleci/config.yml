@@ -174,7 +174,7 @@ jobs:
             # rm package-lock.json
             npm install
             npm audit fix --force
-            npm run migrations > migrations_dump.txt
+            sudo npm run migrations > migrations_dump.txt
 
             if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
             then
