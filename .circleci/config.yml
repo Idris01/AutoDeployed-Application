@@ -3,7 +3,7 @@ version: 2.1
 defaults: 
   - &default
       docker:
-        - image: circleci/node:13.8.0
+        - image: cimg/node:18.7.0
   - &default-python
       docker:
         - image: circleci/python
@@ -158,12 +158,11 @@ jobs:
             npm audit --audit-level=critical
   
   run-migrations:
-    docker:
-      - image: cimg/node:18.7.0
+    <<: *default
     steps:
       - checkout
-      #- restore_cache:
-      #    keys: [backend-build]
+      - restore_cache:
+          keys: [backend-build]
       - install-awscli:
           su: "sudo "
       - run:
