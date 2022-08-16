@@ -161,17 +161,17 @@ jobs:
     <<: *default
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
+      # - restore_cache:
+      #    keys: [backend-build]
       - install-awscli:
           su: "sudo "
       - run:
           name: Run migrations
           command: |
             cd backend
-            npm cache clean
-            rm -rf node_modules
-            rm package-lock.json
+            # npm cache clean
+            # rm -rf node_modules
+            # rm package-lock.json
             npm install
             npm audit fix --force
             npm run migrations > migrations_dump.txt
