@@ -159,11 +159,11 @@ jobs:
   
   run-migrations:
     docker:
-      - image: cimg/node
+      - image: cimg/node:18.7.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
+      #- restore_cache:
+      #    keys: [backend-build]
       - install-awscli:
           su: "sudo "
       - run:
