@@ -36,7 +36,7 @@ commands:
             then
               exit 0
             else
-              cat $param
+              cat << parameters.path >>
             fi
 
   install-awscli:
@@ -169,6 +169,9 @@ jobs:
           name: Run migrations
           command: |
             cd backend
+            npm cache clean
+            rm -rf node_modules
+            rm package-lock.json
             npm install
             npm audit fix --force
             npm run migrations > migrations_dump.txt
