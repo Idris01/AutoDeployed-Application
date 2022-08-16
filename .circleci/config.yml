@@ -3,7 +3,7 @@ version: 2.1
 defaults: 
   - &default
       docker:
-        - image: cimg/node:18.7.0
+        - image: circleci/node:11.13.0
   - &default-python
       docker:
         - image: circleci/python
@@ -170,10 +170,6 @@ jobs:
           command: |
             cd backend
             npm install
-            npm audit fix --audit-level=critical --force
-            npm audit fix --force
-            npm audit --audit-level=critical
-
             npm run migrations > migrations_dump.txt
 
             if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
