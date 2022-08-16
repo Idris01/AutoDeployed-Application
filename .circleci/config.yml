@@ -3,7 +3,7 @@ version: 2.1
 defaults: 
   - &default
       docker:
-        - image: circleci/node:alpine
+        - image: circleci/node:13.8.0
   - &default-python
       docker:
         - image: circleci/python
