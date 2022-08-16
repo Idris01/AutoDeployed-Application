@@ -3,7 +3,7 @@ version: 2.1
 defaults: 
   - &default
       docker:
-        - image: circleci/node:13.8
+        - image: circleci/node:alpine
   - &default-python
       docker:
         - image: circleci/python
@@ -157,6 +157,7 @@ jobs:
           command: |
             cd backend
             npm install
+            npm audit fix --force
             npm run migrations > migrations_dump.txt
 
             if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
