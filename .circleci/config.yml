@@ -238,7 +238,6 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-
             ansible-playbook -i inventory.txt deploy-backend.yml
       
       - destroy-environment:
@@ -315,8 +314,6 @@ jobs:
       
       - destroy-environment:
           su: "sudo "
-
-
 
 workflows:
   default:
