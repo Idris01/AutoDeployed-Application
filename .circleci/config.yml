@@ -3,7 +3,7 @@ version: 2.1
 defaults: 
   - &default
       docker:
-        - image: circleci/node:13.8
+        - image: cimg/node:13.8.0
   - &default-python
       docker:
         - image: circleci/python
@@ -24,9 +24,11 @@ commands:
           when: on_fail
           command: |
             << parameters.su >>aws cloudformation delete-stack \
-              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --region "${AWS_DEFAULT_REGION}"
             << parameters.su >>aws cloudformation delete-stack \
-              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --region "${AWS_DEFAULT_REGION}"
       - run:
           name: print log
           when: on_fail
