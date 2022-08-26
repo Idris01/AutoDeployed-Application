@@ -1,23 +1,31 @@
 ---
-- name: "upgrage packages"
+- name: "update local apt repo"
   become: true
   apt:
-    upgrade: "yes"
+    update_cache: yes
 
-- name: "Install Packages"
+- name: "upgrade apt packages"
   become: true
   apt:
-    name: ["python3"]
+    upgrade: true
+  
+- name: "Remove unrequired dependencies"
+  become: true
+  apt:
+    autoremove: true
+  
 
 - name: "Install nodejs and npm"
   become: true
-  shell: |
-      curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
-      apt-get install nodejs
-      npm install -g npm
+  apt:
+    name: ["nodejs", "npm"]
+    state: latest
+    update_cache: yes
       
-- name: "install ansible and pm2"
+- name: "install pm2"
   become: true
-  shell: |
-    pip install ansible
-    npm install pm2
+  apt:
+    name: pm2
+    state: present
+    production: true
+    global: yes
