@@ -326,6 +326,7 @@ jobs:
             cd .circleci/ansible
             sudo curl --insecure "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-${CIRCLE_WORKFLOW_ID:0:7}" >> inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
+            env
       
       - destroy-environment:
           su: "sudo "
