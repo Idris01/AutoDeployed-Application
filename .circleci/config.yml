@@ -171,9 +171,9 @@ jobs:
           name: Run migrations
           command: |
             cd backend
-            npm cache clean -f
-            npm install -g n install n
-            n stable
+            sudo npm cache clean -f
+            sudo npm install -g n install n
+            sudo n stable
             npm run migrations > migrations_dump.txt
 
             if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt

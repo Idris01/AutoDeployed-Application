@@ -67,6 +67,7 @@ UserInterfaceState.xcuserstate
 node_modules
 
 .env
+package-lock.json
 dist
 sample_config.yml
 info.txt
