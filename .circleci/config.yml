@@ -1,16 +1,18 @@
+---
 version: 2.1
-
-defaults: 
+defaults:
   - &default
-      docker:
-        - image: cimg/node:13.8.0
+    docker:
+      - image: cimg/node:13.8.0
   - &default-python
-      docker:
-        - image: circleci/python
+    docker:
+      - image: circleci/python
 
 commands:
   destroy-environment:
-    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    description: |
+      Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    environment:
     parameters:
       su:
         type: string
@@ -50,7 +52,8 @@ commands:
     steps:
       - run:
           command: |
-            << parameters.su >>curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            << parameters.su >>curl \
+            "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             << parameters.su >>unzip awscliv2.zip
             << parameters.su >>sudo ./aws/install
 
@@ -326,10 +329,28 @@ jobs:
       - run:
           name: Configure server
           command: |
+            echo NODE_ENV=production > ~/project/backend/.env
+            echo VERSION: "1" >> ~/project/backend/.env
+            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> ~/project/backend/.env
+            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ~/project/backend/.env
+            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> ~/project/backend/.env
+            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> ~/project/backend/.env
+            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR  >> ~/project/backend/.env
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ~/project/backend/.env
+            echo TYPEORM_PORT=$TYPEORM_PORT >> ~/project/backend/.env
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ~/project/backend/.env
+            echo TYPEORM_HOST=$TYPEORM_HOST >> ~/project/backend/.env
+            
             cd .circleci/ansible
             sudo curl --insecure "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-${CIRCLE_WORKFLOW_ID:0:7}" >> inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
-            env
+            
+            cat ~/project/backend/.env
+      
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/backend/.env
       
       - destroy-environment:
           su: "sudo "
