@@ -6,7 +6,7 @@ defaults:
       - image: circleci/node:13.8.0
   - &default-python
     docker:
-      - image: python:3.7-alpine3.11
+      - image: circleci/python
 
 commands:
   destroy-environment:
