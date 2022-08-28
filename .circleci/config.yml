@@ -170,7 +170,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-scan]
+          keys: [backend-build]
       - install-awscli:
           su: "sudo "
       - run:
@@ -179,13 +179,19 @@ jobs:
             cd backend
             sudo npm install -g npm
             npm run migrations > migrations_dump.txt
+            cat migrations_dump.txt
 
+      - run:
+          name: save migration status
+          command: |
+            cd backend
             if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
             then
-              curl "${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}" -d "1"
+                curl "${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}" -d "1"
             else
-              curl "${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}" -d "0"
+                curl "${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}" -d "0"
             fi
+
       - destroy-environment:
           path: "/home/circleci/.npm/_logs/*.log"
 
