@@ -182,7 +182,7 @@ jobs:
             cat migrations_dump.txt
 
       - run:
-          name: save migration status
+          name: migration status saved
           command: |
             cd backend
             if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
