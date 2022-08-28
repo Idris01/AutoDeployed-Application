@@ -158,22 +158,23 @@ jobs:
             npm audit fix --audit-level=critical --force
             npm audit fix --force
             npm audit --audit-level=critical
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-scan
   
   run-migrations:
     <<: *default
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build]
+          keys: [backend-scan]
       - install-awscli:
           su: "sudo "
       - run:
           name: Run migrations
           command: |
             cd backend
-            sudo npm cache clean -f
-            sudo npm install -g n install n
-            sudo n stable
+            npm install
             npm run migrations > migrations_dump.txt
 
             if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
