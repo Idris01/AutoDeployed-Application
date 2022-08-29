@@ -67,7 +67,7 @@ commands:
           command: |
             # Curl command here to see if there was a successful migration
             # associated with the workflow id, store result in SUCCESS variable
-            SUCCESS=$(curl --insecure "${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}")
+            SUCCESS=$(curl --insecure "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/migration_${CIRCLE_WORKFLOW_ID:0:7}")
             if(( $SUCCESS==1 ));
             then
               cd ~/project/backend
@@ -181,17 +181,17 @@ jobs:
             cd backend
             sudo npm install -g npm
             npm run migrations | tee migrations_dump.txt
-            cat migrations_dump.txt
+            echo "migration executed successfully" >> migrations_dump.txt
 
       - run:
-          name: migration status saved
+          name: save migration status on KVDB
           command: |
             cd backend
-            if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
+            if grep -q "migration executed successfully" ~/project/backend/migrations_dump.txt
             then
-                curl "${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}" -d "1"
+                curl "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/migration_${CIRCLE_WORKFLOW_ID:0:7}" -d "1"
             else
-                curl "${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}" -d "0"
+                curl "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/migration_${CIRCLE_WORKFLOW_ID:0:7}" -d "0"
             fi
 
       - destroy-environment:
@@ -217,7 +217,8 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            export BACKEND_IP=$(curl --insecure $"{KVDB_BUCKET}/web-${CIRCLE_WORKFLOW_ID:0:7}")
+            curl --insecure "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-${CIRCLE_WORKFLOW_ID:0:7}" > backend_url.txt
+            export BACKEND_IP=$(cat backend_url.txt)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             echo "API_URL = ${API_URL}"
@@ -250,6 +251,9 @@ jobs:
           command: |
             sudo apt install tar gzip -y
             sudo pip install ansible
+            sudo curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
+            sudo apt-get install nodejs
+            sudo npm install pm2
 
       - run:
           name: Create Artifacts
@@ -262,7 +266,7 @@ jobs:
             sudo mkdir -p .circleci/ansible/roles/deploy/files
             sudo mv artifact.tar.gz .circleci/ansible/roles/deploy/files
             cd .circleci/ansible
-            sudo curl --insecure "${KVDB_BUCKET}/web-${CIRCLE_WORKFLOW_ID:0:7}" >> inventory.txt
+            sudo curl --insecure "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-${CIRCLE_WORKFLOW_ID:0:7}" >> inventory.txt
             echo "Contents of inventory.txt file is $(cat inventory.txt)"
       - run:
           name: Deploy backend
