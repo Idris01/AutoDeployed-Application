@@ -180,7 +180,7 @@ jobs:
           command: |
             cd backend
             sudo npm install -g npm
-            npm run migrations > migrations_dump.txt
+            npm run migrations | tee migrations_dump.txt
             cat migrations_dump.txt
 
       - run:
