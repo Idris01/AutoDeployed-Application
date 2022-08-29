@@ -247,8 +247,10 @@ jobs:
             sudo apt update
             sudo apt install tar gzip -y
             pip install ansible
-            curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-            sudo apt install nodejs -y
+            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            sudo apt install -y nodejs
+            sudo npm install --global n
+            sudo n 13.8.0
 
       - run:
           name: Create Artifacts
