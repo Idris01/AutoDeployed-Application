@@ -247,8 +247,7 @@ jobs:
             sudo apt install tar gzip -y
             sudo pip install ansible
             sudo curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-            sudo apt-get install nodejs
-            sudo npm install pm2
+            sudo apt install nodejs -y
 
       - run:
           name: Create Artifacts
