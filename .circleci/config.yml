@@ -166,28 +166,14 @@ jobs:
           key: backend-scan
 
   run-migrations:
-    <<: *default
+    docker:
+      - image: cimg/node:16.13.2
     steps:
       - checkout
       - restore_cache:
           keys: [backend-build]
       - install-awscli:
           su: "sudo "
-      - run:
-          name: Inject Environmental Variables
-          command: |
-            cd backend
-            echo NODE_ENV=production > .env
-            echo VERSION: "1" >> .env
-            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> .env
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> .env
-            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> .env
-            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> .env
-            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR  >> .env
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> .env
-            echo TYPEORM_PORT=$TYPEORM_PORT >> .env
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> .env
-            echo TYPEORM_HOST=$TYPEORM_HOST >> .env
 
       - run:
           name: Run migrations
