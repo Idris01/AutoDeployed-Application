@@ -366,13 +366,6 @@ jobs:
           su: "sudo "
 
       - run:
-          name: Get backend url
-          command: |
-            echo "Backend Url:"
-            curl --insecure "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-${CIRCLE_WORKFLOW_ID:0:7}" | tee backend_url.txt
-            export BACKEND_IP=$(cat backend_url.txt)
-            export API_URL="http://${BACKEND_IP}:3030"
-      - run:
           name: Backend smoke test.
           command: |
             curl --insecure "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-${CIRCLE_WORKFLOW_ID:0:7}" > publicIp.txt
@@ -401,8 +394,8 @@ jobs:
               exit 1
             fi
 
-      - revert-migrations
-      - destroy-environment
+      #- revert-migrations
+      #- destroy-environment
 
 workflows:
   default:
