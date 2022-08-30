@@ -78,7 +78,7 @@ commands:
           name: Delete migration bucket
           when: on_fail
           command: |
-            aws s3 rm "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}/dist" --recursive
+            aws s3 rm "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}/" --recursive
 
 jobs:
   build-frontend:
@@ -377,9 +377,11 @@ jobs:
           command: |
             if curl "${API_URL}/api/status" | grep "ok"
             then
-                return 0
+              echo "Backend Confirmed up..."
+              exit 0
             else
-                return 1
+              echo "Backend not Responding"
+              exit 1
             fi
 
       - run:
@@ -390,9 +392,9 @@ jobs:
             if curl -s ${URL} | grep "Welcome"
             then
                 # Change this to 0 after the job fails
-              return 1
+              exit 1
             else
-              return 1
+              exit 1
             fi
 
       - revert-migrations
