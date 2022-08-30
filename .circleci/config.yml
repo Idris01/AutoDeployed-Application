@@ -375,7 +375,11 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            if curl "${API_URL}/api/status" | grep "ok"
+            curl --insecure "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-${CIRCLE_WORKFLOW_ID:0:7}" > publicIp.txt
+            export address="http://$(cat publicIp.txt):3030/api/status"
+            rm publicIp.txt
+            echo "Trying to access $address"
+            if curl $address | grep "ok"
             then
               echo "Backend Confirmed up..."
               exit 0
