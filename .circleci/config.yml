@@ -372,6 +372,7 @@ jobs:
             export address="http://$(cat publicIp.txt):3030/api/status"
             rm publicIp.txt
             echo "Trying to access $address"
+            sleep 30
             if curl $address | grep "ok"
             then
               echo "Backend Confirmed up..."
@@ -394,8 +395,8 @@ jobs:
               exit 1
             fi
 
-      #- revert-migrations
-      #- destroy-environment
+      - revert-migrations
+      - destroy-environment
 
 workflows:
   default:
