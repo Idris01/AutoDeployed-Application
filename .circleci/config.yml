@@ -185,13 +185,12 @@ jobs:
             cd backend
             sudo npm install -g npm
             npm run migrations | tee migrations_dump.txt
-            echo "migration executed successfully" >> migrations_dump.txt
 
       - run:
           name: save migration status on KVDB
           command: |
             cd backend
-            if grep -q "migration executed successfully" ~/project/backend/migrations_dump.txt
+            if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
             then
                 curl "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/migration_${CIRCLE_WORKFLOW_ID:0:7}" -d "1"
             else
