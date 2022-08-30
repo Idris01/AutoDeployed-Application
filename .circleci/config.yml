@@ -244,12 +244,11 @@ jobs:
       - run:
           name: configure aws cli
           command: |
-            sudo mkdir -p ~/.aws
-            sudo touch ~/.aws/credentials
-            sudo echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
-            sudo echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
-            sudo echo "region=$AWS_DEFAULT_REGION" >> ~/.aws/credentials
-            sudo cat ~/.aws/credentials
+            touch credentials && echo "[default]" > credentials
+            echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> credentials
+            echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> credentials
+            echo "region=$AWS_DEFAULT_REGION" >> credentials
+            cat credentials
       
       - run:
           name: Install dependencies
