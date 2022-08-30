@@ -190,7 +190,8 @@ jobs:
           name: save migration status on KVDB
           command: |
             cd backend
-            if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
+            if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt || \
+              grep -q "No migrations are pending" ~/project/backend/migrations_dump.txt
             then
                 curl --insecure "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/migration_${CIRCLE_WORKFLOW_ID:0:7}" -d "1"
             else
