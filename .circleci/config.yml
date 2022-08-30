@@ -242,6 +242,16 @@ jobs:
           fingerprints:
             - "88:ea:0c:dc:7f:9a:71:71:56:79:4c:d9:eb:1a:06:3d"
       - run:
+          name: configure aws cli
+          command: |
+            sudo mkdir -p ~/.aws
+            sudo touch ~/.aws/credentials
+            sudo echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
+            sudo echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+            sudo echo "region=$AWS_DEFAULT_REGION" >> ~/.aws/credentials
+            sudo cat ~/.aws/credentials
+      
+      - run:
           name: Install dependencies
           command: |
             sudo apt update
@@ -260,11 +270,17 @@ jobs:
             npm run build
             cd ..
             sudo tar -C backend -czvf artifact.tar.gz .
+
+      - run:
+          name: move artifact into accessble location for ansible
+          command: |
+            cd backend
             sudo mkdir -p .circleci/ansible/roles/deploy/files
             sudo mv artifact.tar.gz .circleci/ansible/roles/deploy/files
             cd .circleci/ansible
             sudo curl --insecure "https://kvdb.io/4MemjaUyF51zbLJncfsSF5/web-${CIRCLE_WORKFLOW_ID:0:7}" >> inventory.txt
             echo "Contents of inventory.txt file is $(cat inventory.txt)"
+      
       - run:
           name: Deploy backend
           command: |

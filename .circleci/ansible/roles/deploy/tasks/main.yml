@@ -1,9 +1,14 @@
 ---
+- name: create app directory
+  become: true
+  shell: |
+    mkdir -p ~/application
+    
 - name: copy artifacts
   become: true
   unarchive:
     src: artifact.tar.gz
-    dest: ~/home/ubuntu
+    dest: ~/application
 
 - name: install artifacts
   become: true
@@ -12,4 +17,4 @@
     pm2 stop default
     pm2 start npm -- start
   args:
-    chdir: ~/home/ubuntu
+    chdir: ~/application
