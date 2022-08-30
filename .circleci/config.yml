@@ -274,7 +274,6 @@ jobs:
       - run:
           name: move artifact into accessble location for ansible
           command: |
-            cd backend
             sudo mkdir -p .circleci/ansible/roles/deploy/files
             sudo mv artifact.tar.gz .circleci/ansible/roles/deploy/files
             cd .circleci/ansible
