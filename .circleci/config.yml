@@ -74,6 +74,11 @@ commands:
               npm install
               npm run migrations:revert
             fi
+      - run:
+          name: Delete migration bucket
+          when: on_fail
+          command: |
+            aws s3 rm "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}/dist" --recursive
 
 jobs:
   build-frontend:
@@ -229,8 +234,8 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
 
-      - revert-migrations
       - destroy-environment
+      - revert-migrations
 
   deploy-backend:
     <<: *default-python
@@ -327,6 +332,7 @@ jobs:
             cat instances.txt >> ~/project/.circleci/ansible/inventory.txt
             cat instances.txt
             rm instances.txt
+      - revert-migrations
       - destroy-environment
 
   configure-infrastructure:
@@ -353,18 +359,12 @@ jobs:
           su: "sudo "
 
   smoke-test:
-    docker:
-      - image: amazon/aws-cli
+    <<: *default
     steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            yum install curl
-            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-            sudo yum install -y nodejs
-            sudo yum install --global n
-            sudo n 13.8.0
+      - install-awscli:
+          su: "sudo "
+
       - run:
           name: Get backend url
           command: |
@@ -394,9 +394,9 @@ jobs:
             else
               return 1
             fi
+
       - revert-migrations
-      - destroy-environment:
-          su: "sudo "
+      - destroy-environment
 
 workflows:
   default:
