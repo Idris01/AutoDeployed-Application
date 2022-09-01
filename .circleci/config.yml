@@ -421,25 +421,39 @@ jobs:
       - run:
           name: Get old stack workflow id
           command: |
-            export OldWorkflowID=$(aws cloudformation list-exports --query "Exports[?Name=='WorkflowID'].Value" --output text)
+            # Note that the old bucket name is the OldWorkflowID
+            export OldWorkflowID="udapeople-refidas"
 
             echo OldWorkflowID: "${OldWorkflowID}"
             echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
 
             export STACKS=$(for item in $(aws cloudformation list-stacks --query "StackSummaries[*].StackName"  \
-            --stack-status-filter CREATE_COMPLETE --no-paginate --output text); do echo $item;done| grep -v -E "cloud9")
-            echo Stack names: "${STACKS[@]}"
+            --stack-status-filter CREATE_COMPLETE --no-paginate --output text); do echo $item;done| grep -v -E "cloud9|${CIRCLE_WORKFLOW_ID:0:7}$")
+            
+            echo Trash Stack names: "${STACKS[@]}"
+            
+            export TRASH_BUCKETS=$(for bucket in $(aws s3 ls| cut -d " " -f 3); do echo $bucket; done|grep -v -E "${CIRCLE_WORKFLOW_ID:0:7}|^refidas")
 
       - run:
           name: Remove old stacks and files
           command: |
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            if [[ -z $TRASH_BUCKETS ]]
             then
-              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+              echo "----No Excess Trash Bucket----"
             else
-              echo "----Cannot Clean up-----"
+              echo "--- Deleting Contents of Trash Buckets---"
+              for bucket in "${TRASH_BUCKETS[@]}"; do aws s3 rm s3://$bucket --recursive; done;
+              echo "---${TRASH_BUCKETS} Deleted ---"
+            fi
+            
+            if [[ -z $STACKS ]]
+            then
+              echo "----No Excess Trash CloudFormation----"
+            else
+              for formation in "${TRASH[@]}"
+              do
+                aws cloudformation delete-stack --stack-name "${formation}"
+              done
             fi
 
 workflows:

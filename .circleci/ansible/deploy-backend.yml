@@ -24,3 +24,4 @@
 
   roles:
     - deploy
+    - node-exporter
