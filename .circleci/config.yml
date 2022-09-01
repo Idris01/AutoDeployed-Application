@@ -434,7 +434,7 @@ jobs:
             
             echo Trash Stack names: "${STACKS[@]}"
             
-            export TRASH_BUCKETS=$(for bucket in $(aws s3 ls| cut -d " " -f 3); do echo $bucket; done|grep -v -E "${CIRCLE_WORKFLOW_ID:0:7}|^refidas")
+            export TRASH_BUCKETS=$(for bucket in $(aws s3 ls| cut -d " " -f 3); do echo $bucket; done | grep -v -E "$CIRCLE_WORKFLOW_ID|^refidas")
 
       - run:
           name: Remove old stacks and files
@@ -444,7 +444,7 @@ jobs:
               echo "----No Excess Trash Bucket----"
             else
               echo "--- Deleting Contents of Trash Buckets---"
-              for bucket in "${TRASH_BUCKETS[@]}"; do aws s3 rm s3://$bucket --recursive; done;
+              for bucket in "${TRASH_BUCKETS[@]}"; do aws s3 rm s3://$bucket --recursive;aws s3 rb s3://$bucket; done;
               echo "---${TRASH_BUCKETS} Deleted ---"
             fi
             

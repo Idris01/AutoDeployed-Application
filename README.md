@@ -5,7 +5,7 @@ is build from it files (both frontend and backend), `Tested`, `Audited` before c
 stategy is used in promoting to production. Prometheus is used to set up monitoring for the Application.
 
 
-![Diagram of CI/CD Pipeline we will be building.](udapeople.png)
+![Front page of Deployed Website](employee-added.PNG)
 
 ### Built With
 
