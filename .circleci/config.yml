@@ -433,7 +433,7 @@ jobs:
             echo OLD_STACKS: "${OLD_STACKS}"
             
             export OLD_BUCKETS=$(for bucket in $(aws s3 ls| cut -d " " -f 3); do echo $bucket; done | grep -v -E "$WORKFLOW_ID|refidas")
-            echo OLD BUCKETS: "${OLD_BUCKETS}
+            echo OLD BUCKETS: "${OLD_BUCKETS}"
 
       - run:
           name: Remove old stacks and files
