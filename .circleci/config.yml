@@ -424,37 +424,38 @@ jobs:
           name: Get old stack workflow id
           command: |
             # Note that the old bucket name is the OldWorkflowID
-            export OldWorkflowID="udapeople-refidas"
-
-            echo OldWorkflowID: "${OldWorkflowID}"
-            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
-
-            export STACKS=$(for item in $(aws cloudformation list-stacks --query "StackSummaries[*].StackName"  \
-            --stack-status-filter CREATE_COMPLETE --no-paginate --output text); do echo $item;done| grep -v -E "cloud9|${CIRCLE_WORKFLOW_ID:0:7}$")
+            export WORKFLOW_ID="${CIRCLE_WORKFLOW_ID:0:7}"
             
-            echo Trash Stack names: "${STACKS[@]}"
+            export OLD_STACKS=$(for item in $(aws cloudformation list-stacks --query "StackSummaries[*].StackName"  \
+            --stack-status-filter CREATE_COMPLETE --no-paginate --output text); do echo $item;done| grep -v -E "cloud9|$WORKFLOW_ID")
             
-            export TRASH_BUCKETS=$(for bucket in $(aws s3 ls| cut -d " " -f 3); do echo $bucket; done | grep -v -E "$CIRCLE_WORKFLOW_ID|^refidas")
+            echo OLD_STACKS: "${OLD_STACKS}"
+            
+            export 0LD_BUCKETS=$(for bucket in $(aws s3 ls| cut -d " " -f 3); do echo $bucket; done | grep -v -E "$WORKFLOW_ID|refidas")
+            echo OLD BUCKETS: "${OLD_BUCKETS}
 
       - run:
           name: Remove old stacks and files
           command: |
-            if [[ -z $TRASH_BUCKETS ]]
+            0LD_BUCKETS=($0LD_BUCKETS) # this splits by space to create an array
+            if [[ -z $0LD_BUCKETS ]]
             then
-              echo "----No Excess Trash Bucket----"
+              echo "----No Buckets to Delete----"
             else
-              echo "--- Deleting Contents of Trash Buckets---"
-              for bucket in "${TRASH_BUCKETS[@]}"; do aws s3 rm s3://$bucket --recursive;aws s3 rb s3://$bucket; done;
-              echo "---${TRASH_BUCKETS} Deleted ---"
+              echo "--- Deleting Old Buckets---"
+              for bucket in "${0LD_BUCKETS[@]}";do aws s3 rm s3://$bucket --recursive;aws s3 rb s3://$bucket; done;
+              echo "---${0LD_BUCKETS} Deleted ---"
             fi
             
-            if [[ -z $STACKS ]]
+            OLD_STACKS=($OLD_STACKS)
+            if [[ -z $OLD_STACKS ]]
             then
-              echo "----No Excess Trash CloudFormation----"
+              echo "----No CloudFormation Stack to Delete----"
             else
-              for formation in "${TRASH[@]}"
+              echo "--- Deleting Old Stacks ---"
+              for stack_name in "${OLD_STACKS[@]}"
               do
-                aws cloudformation delete-stack --stack-name "${formation}"
+                aws cloudformation delete-stack --stack-name "${stack_name}"
               done
             fi
 
