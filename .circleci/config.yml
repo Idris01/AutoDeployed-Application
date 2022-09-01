@@ -421,7 +421,7 @@ jobs:
       - install-awscli:
           su: "sudo "
       - run:
-          name: Get old stack workflow id
+          name: Get and Delete Old Buckets and Stacks
           command: |
             # Note that the old bucket name is the OldWorkflowID
             export WORKFLOW_ID="${CIRCLE_WORKFLOW_ID:0:7}"
@@ -434,10 +434,8 @@ jobs:
             
             export OLD_BUCKETS=$(for bucket in $(aws s3 ls| cut -d " " -f 3); do echo $bucket; done | grep -v -E "$WORKFLOW_ID|refidas")
             echo OLD BUCKETS: "${OLD_BUCKETS}"
-
-      - run:
-          name: Remove old stacks and files
-          command: |
+            
+            #------------------------ Buckets First -------------------------
             OLD_BUCKETS=($OLD_BUCKETS) # this splits by space to create an array
             if [[ -z $OLD_BUCKETS ]]
             then
@@ -448,6 +446,7 @@ jobs:
               echo "---${OLD_BUCKETS} Deleted ---"
             fi
             
+            # ---------------- Stacks Follows------------------------------------
             OLD_STACKS=($OLD_STACKS)
             if [[ -z $OLD_STACKS ]]
             then
