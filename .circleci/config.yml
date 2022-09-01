@@ -253,6 +253,8 @@ jobs:
             echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> credentials
             echo "region=$AWS_DEFAULT_REGION" >> credentials
             cat credentials
+            sudo mkdir -p ~/.aws
+            sudo mv credentials ~/.aws
 
       - run:
           name: Install dependencies
