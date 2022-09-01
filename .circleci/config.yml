@@ -426,25 +426,26 @@ jobs:
             # Note that the old bucket name is the OldWorkflowID
             export WORKFLOW_ID="${CIRCLE_WORKFLOW_ID:0:7}"
             
+  
             export OLD_STACKS=$(for item in $(aws cloudformation list-stacks --query "StackSummaries[*].StackName"  \
             --stack-status-filter CREATE_COMPLETE --no-paginate --output text); do echo $item;done| grep -v -E "cloud9|$WORKFLOW_ID")
             
             echo OLD_STACKS: "${OLD_STACKS}"
             
-            export 0LD_BUCKETS=$(for bucket in $(aws s3 ls| cut -d " " -f 3); do echo $bucket; done | grep -v -E "$WORKFLOW_ID|refidas")
+            export OLD_BUCKETS=$(for bucket in $(aws s3 ls| cut -d " " -f 3); do echo $bucket; done | grep -v -E "$WORKFLOW_ID|refidas")
             echo OLD BUCKETS: "${OLD_BUCKETS}
 
       - run:
           name: Remove old stacks and files
           command: |
-            0LD_BUCKETS=($0LD_BUCKETS) # this splits by space to create an array
-            if [[ -z $0LD_BUCKETS ]]
+            OLD_BUCKETS=($OLD_BUCKETS) # this splits by space to create an array
+            if [[ -z $OLD_BUCKETS ]]
             then
               echo "----No Buckets to Delete----"
             else
               echo "--- Deleting Old Buckets---"
-              for bucket in "${0LD_BUCKETS[@]}";do aws s3 rm s3://$bucket --recursive;aws s3 rb s3://$bucket; done;
-              echo "---${0LD_BUCKETS} Deleted ---"
+              for bucket in "${OLD_BUCKETS[@]}";do aws s3 rm s3://$bucket --recursive;aws s3 rb s3://$bucket; done;
+              echo "---${OLD_BUCKETS} Deleted ---"
             fi
             
             OLD_STACKS=($OLD_STACKS)
