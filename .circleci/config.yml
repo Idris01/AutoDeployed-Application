@@ -309,7 +309,7 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --tags project=udapeople,workflow="${CIRCLE_WORKFLOW_ID:0:7}" \
+              --tags project=udapeople \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
             sleep 40 #wait for infrastructure to provision
@@ -324,8 +324,8 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            aws ec2 describe-instances --filters Name=tag:workflow,Values="${CIRCLE_WORKFLOW_ID:0:7}" \
-              --query Reservations[*].Instances[*].PublicIpAddress \
+            aws ec2 describe-instances --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --query "Reservations[*].Instances[*].PublicDnsName" \
               --output text >> instances.txt
             curl "${KVDB_BUCKET}/web-${CIRCLE_WORKFLOW_ID:0:7}" -d "$(cat instances.txt)"
             if [[ -z "$(cat instances.txt)" ]]; then exit 1; fi
